@@ -11,17 +11,18 @@ import models
 class State(BaseModel, Base):
     """State class"""
     __tablename__ = "states"
-    name = Column(String(128), nullable=False)
-    associated_cities = relationship("City", backref='state',
-                                     cascade='all, delete, delete-orphan')
 
-    @property
-    def cities(self):
-        """Returns the list of City instances associated with this State."""
-        from models import storage
-        related_cities = []
-        all_cities = storage.all(City)
-        for city in all_cities.values():
-            if city.state_id == self.id:
-                related_cities.append(city)
-                return related_cities
+    name = Column(String(128), nullable=False)
+
+    if os.environ.get("HBNB_TYPE_STORAGE") == "db":
+        cities = relationship(
+            "City", cascade="all, delete-orphan", backref="state")
+    else:
+        @property
+        def cities(self):
+            from models import storage
+            city_list = []
+            for city in storage.all("City").values():
+                if city.state_id == self.id:
+                    city_list.append(city)
+            return city_list
