@@ -29,7 +29,11 @@ class HBNBCommand(cmd.Cmd):
         'max_guest': int, 'price_by_night': int,
         'latitude': float, 'longitude': float
     }
-
+    def check_value_type(self, value):
+        """check vaue type"""
+        if not isinstance(value, str):
+            raise ValueError("Value must be a string")
+        return value
     def preloop(self):
         """Prints if isatty is false"""
         if not sys.__stdin__.isatty():
